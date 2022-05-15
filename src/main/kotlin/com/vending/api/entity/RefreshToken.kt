@@ -1,6 +1,5 @@
-package com.vending.api.model
+package com.vending.api.entity
 
-import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import java.time.Instant
 import javax.persistence.Column
 import javax.persistence.Entity

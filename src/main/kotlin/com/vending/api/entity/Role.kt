@@ -1,6 +1,6 @@
-package com.vending.api.model
+package com.vending.api.entity
 
-import com.vending.api.model.enumeration.RoleType
+import com.vending.api.entity.enumeration.RoleType
 import org.hibernate.annotations.Cache
 import org.hibernate.annotations.CacheConcurrencyStrategy
 import java.io.Serializable
