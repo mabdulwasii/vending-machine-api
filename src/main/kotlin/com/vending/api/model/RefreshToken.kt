@@ -1,5 +1,6 @@
 package com.vending.api.model
 
+import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import java.time.Instant
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -13,36 +14,18 @@ import javax.persistence.Table
 
 @Entity
 @Table(name = "refresh_token", indexes = [Index(columnList = "token", unique = true)])
-class RefreshToken {
-    constructor(id: Long, user: User?, token: String?, expiryDate: Instant?) {
-        this.id = id
-        this.user = user
-        this.token = token
-        this.expiryDate = expiryDate
-    }
-
-    constructor()
-
+class RefreshToken (
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    var id: Long = 0
-        private set
+    var id: Long = 0,
 
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    var user: User? = null
+    var user: User,
 
     @Column(nullable = false, unique = true)
-    var token: String? = null
+    var token: String,
 
     @Column(nullable = false)
-    var expiryDate: Instant? = null
-    override fun toString(): String {
-        return "RefreshToken{" +
-                "id=" + id +
-                ", user=" + user +
-                ", token='" + token + '\'' +
-                ", expiryDate=" + expiryDate +
-                '}'
-    }
-}
+    var expiryDate: Instant,
+)
