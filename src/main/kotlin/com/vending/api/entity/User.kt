@@ -6,6 +6,7 @@ import javax.persistence.Entity
 import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.Id
+import javax.persistence.Index
 import javax.persistence.JoinColumn
 import javax.persistence.JoinTable
 import javax.persistence.ManyToMany
@@ -15,7 +16,10 @@ import javax.validation.constraints.NotNull
 import javax.validation.constraints.Size
 
 @Entity
-@Table(name = "user", uniqueConstraints = [UniqueConstraint(columnNames = ["username"])])
+@Table(name = "user",
+       uniqueConstraints = [UniqueConstraint(columnNames = ["username"])],
+       indexes = [Index(columnList = "username", unique = true)]
+)
 class User(
     @Id
     @GeneratedValue
@@ -24,7 +28,7 @@ class User(
     @NotNull
     @Size(min = 5, max = 200)
     @Column(length = 200, unique = true, nullable = false)
-    var username:String,
+    var username: String,
 
     @JsonIgnore
     @NotNull
