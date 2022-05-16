@@ -1,4 +1,4 @@
-package com.vending.api.security.jwt
+package com.vending.api.security.auth
 
 import com.vending.api.security.service.DomainUserDetailsService
 import com.vending.api.utils.JWTUtils

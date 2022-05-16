@@ -1,4 +1,4 @@
-package com.vending.api.service
+package com.vending.api.utils
 
 import com.vending.api.exception.PasswordMismatchException
 

@@ -1,7 +1,7 @@
 package com.vending.api.security.config;
 
-import com.vending.api.security.jwt.AuthEntryPointJwt;
-import com.vending.api.security.jwt.AuthTokenFilter;
+import com.vending.api.security.auth.AuthEntryPointJwt;
+import com.vending.api.security.auth.AuthTokenFilter;
 import com.vending.api.security.service.DomainUserDetailsService;
 import com.vending.api.utils.JWTUtils;
 import org.springframework.context.annotation.Bean;

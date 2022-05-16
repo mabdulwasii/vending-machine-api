@@ -10,6 +10,7 @@ import com.vending.api.repository.UserRepository
 import com.vending.api.utils.ApiResponseUtils.Companion.buildSuccessfulApiResponse
 import com.vending.api.utils.Constant
 import com.vending.api.utils.DtoTransformerUtils.Companion.transformCreateUserRequestToUserEntity
+import com.vending.api.utils.SecurityUtils
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 

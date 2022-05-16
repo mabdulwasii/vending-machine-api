@@ -1,4 +1,4 @@
-package com.vending.api.security.jwt
+package com.vending.api.security.auth
 
 import java.io.IOException
 import org.slf4j.LoggerFactory
