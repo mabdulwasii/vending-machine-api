@@ -36,6 +36,9 @@ class User(
     @Column(name = "password", length = 256, nullable = false)
     var password: String,
 
+    @Column(name = "deposit")
+    var deposit: Int = 0,
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "user_role",
