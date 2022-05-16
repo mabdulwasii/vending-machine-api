@@ -11,7 +11,7 @@ import com.vending.api.utils.ApiResponseUtils.Companion.buildSuccessfulApiRespon
 import com.vending.api.utils.Constant
 import com.vending.api.utils.DtoTransformerUtils.Companion.transformCreateUserRequestToUserEntity
 import com.vending.api.utils.SecurityUtils
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
 
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service
 class UserService(
     val userRepository: UserRepository,
     val roleRepository: RoleRepository,
-    val passwordEncoder: BCryptPasswordEncoder
+    val passwordEncoder: PasswordEncoder
 ) {
 
     fun save(user: User) = userRepository.save(user)
