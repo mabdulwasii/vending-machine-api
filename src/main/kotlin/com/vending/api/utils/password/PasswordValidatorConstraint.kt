@@ -1,4 +1,4 @@
-package com.vending.api.utils
+package com.vending.api.utils.password
 
 import org.passay.CharacterRule
 import org.passay.EnglishCharacterData
