@@ -6,7 +6,7 @@ spring:
   application:
     name: VendingMachineApi
   datasource:
-    url: jdbc:h2:mem:mydb
+    url: jdbc:h2:mem:vending
     username: sa
     password:
     driverClassName: org.h2.Driver
@@ -18,7 +18,7 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
-      ddl-auto: create-drop
+      ddl-auto: update
     properties:
       hibernate:
         generate_statistics: true
@@ -34,7 +34,7 @@ spring:
         web-allow-others: true
 
   flyway:
-    url: jdbc:h2:mem:mydb
+    url: jdbc:h2:mem:vending
     user: sa
     password:
 
