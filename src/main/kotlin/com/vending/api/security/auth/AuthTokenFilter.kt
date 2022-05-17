@@ -7,7 +7,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource
-import org.springframework.util.StringUtils
 import org.springframework.web.filter.OncePerRequestFilter
 import javax.servlet.FilterChain
 import javax.servlet.ServletException
@@ -44,10 +43,9 @@ class AuthTokenFilter(
     }
 
     private fun parseJwt(request: HttpServletRequest): String? {
-        val headerAuth: String = request.getHeader("Authorization")
-        return if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
-            headerAuth.substring(7)
-        }
-        else null
+        val headerAuth: String? = request.getHeader("Authorization")
+       return if (headerAuth?.isNotEmpty() == true && headerAuth.startsWith("Bearer ")) {
+           headerAuth.substring(7)
+        } else return headerAuth
     }
 }

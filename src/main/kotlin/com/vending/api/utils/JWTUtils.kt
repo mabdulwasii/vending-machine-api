@@ -18,9 +18,6 @@ class JWTUtils {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
-    @Value("\${token.header}")
-    val header: String = ""
-
     @Value("\${token.expiration}")
     private val expiration: Long = 0
 
@@ -37,6 +34,7 @@ class JWTUtils {
         val claims: MutableMap<String, Any> = HashMap()
         claims["username"] = userPrincipal.username as Any
         claims["id"] = userPrincipal.id as Any
+        claims["roles"] = userPrincipal.authorities as Any
         return Jwts.builder()
             .setSubject(userPrincipal.username)
             .setClaims(claims)

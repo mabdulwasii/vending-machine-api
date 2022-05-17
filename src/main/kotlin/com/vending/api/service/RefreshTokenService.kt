@@ -4,7 +4,7 @@ import com.vending.api.entity.RefreshToken
 import java.util.Optional
 
 interface RefreshTokenService {
-    fun createRefreshToken(id: Long): Optional<RefreshToken>
-    fun findByToken(refreshToken: String?): Optional<RefreshToken>
+    suspend fun createRefreshToken(id: Long): Optional<RefreshToken>
+    suspend fun findByToken(refreshToken: String?): Optional<RefreshToken>
     fun verifyExpiration(refreshToken: RefreshToken): RefreshToken
 }

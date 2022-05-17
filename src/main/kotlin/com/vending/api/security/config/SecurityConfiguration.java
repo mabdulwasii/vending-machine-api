@@ -71,6 +71,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 // Login CaptchaImage allows anonymous access
                 .antMatchers(HttpMethod.POST, "/api/user").permitAll()
+                .antMatchers( "/api/authenticate").permitAll()
                 .antMatchers("/h2-console/**").permitAll()
                 // Except for all the above requests, authentication is required
                 .anyRequest().authenticated();

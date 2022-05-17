@@ -26,7 +26,7 @@ class AuthServiceImpl(
     private val jwtUtils: JWTUtils
 ) : AuthService {
     @Throws(Exception::class)
-    override fun authenticate(loginDetails: LoginDetails): ApiResponse {
+    override suspend fun authenticate(loginDetails: LoginDetails): ApiResponse {
         val authentication: Authentication?
 
         try {
@@ -45,14 +45,15 @@ class AuthServiceImpl(
             SecurityContextHolder.getContext().authentication = it
             val jwtToken = jwtUtils.generateJwtToken(it)
             val loginUser = it.principal as UserDetailsImpl
-            val roles = loginUser.authorities
-                .map { grantedAuthority -> grantedAuthority.authority }
-            val jwt = Jwt(jwtToken!!, loginUser.id!!, loginUser.username, roles)
+            val refreshToken = refreshTokenService.createRefreshToken(loginUser.id)
+                .map { it.token }
+                .orElse("")
+            val jwt = Jwt(jwtToken!!, refreshToken, loginUser.id!!, loginUser.username)
             return ApiResponseUtils.buildSuccessfulApiResponse(jwt, "Login successful", HttpStatus.OK)
         } ?: throw BadCredentialsException("Invalid login details")
     }
 
-    override fun refreshToken(request: RefreshTokenRequest): ApiResponse {
+    override suspend fun refreshToken(request: RefreshTokenRequest): ApiResponse {
         val refreshTokenRequest = request.refreshToken
         var authentication: Authentication? = null
         refreshTokenService.findByToken(refreshTokenRequest)

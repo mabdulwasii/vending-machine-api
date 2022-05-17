@@ -15,13 +15,13 @@ import javax.validation.Valid
 class AuthController(private val authService: AuthService) {
     @PostMapping("/authenticate")
     @Throws(Exception::class)
-    fun authenticate(@RequestBody @Valid loginDetails: LoginDetails): ResponseEntity<*> {
+    suspend fun authenticate(@RequestBody @Valid loginDetails: LoginDetails): ResponseEntity<*> {
         val response = authService.authenticate(loginDetails)
         return ResponseEntity(response, response.status)
     }
 
     @PostMapping("/refresh_token")
-    fun refreshToken(@RequestBody @Valid refreshTokenRequest: RefreshTokenRequest): ResponseEntity<*> {
+    suspend fun refreshToken(@RequestBody @Valid refreshTokenRequest: RefreshTokenRequest): ResponseEntity<*> {
         val response = authService.refreshToken(refreshTokenRequest)
         return ResponseEntity(response, response.status)
     }

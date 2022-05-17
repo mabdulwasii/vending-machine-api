@@ -9,6 +9,8 @@ import com.vending.api.utils.JWTUtils
 import java.time.Instant
 import java.util.Optional
 import java.util.UUID
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.stereotype.Service
 
 @Service
@@ -27,22 +29,28 @@ class RefreshTokenServiceImpl(
         this.userRepository = userRepository
     }
 
-    override fun createRefreshToken(id: Long): Optional<RefreshToken> {
-        var refreshToken: RefreshToken? = null
-        val optionalUser = userRepository.findById(id)
+    override suspend fun createRefreshToken(id: Long): Optional<RefreshToken> {
+        lateinit var refreshToken: RefreshToken
+        val optionalUser = withContext(Dispatchers.IO) {
+            userRepository.findById(id)
+        }
         if (optionalUser.isPresent) {
             refreshToken = RefreshToken(
                 user = optionalUser.get(),
                 token = UUID.randomUUID().toString(),
                 expiryDate = Instant.now().plusMillis(jwtUtils.getRefreshExpiration())
             )
-            refreshToken = refreshTokenRepository.save(refreshToken)
+            refreshToken = withContext(Dispatchers.IO) {
+                refreshTokenRepository.save(refreshToken)
+            }
         }
-        return Optional.ofNullable<RefreshToken>(refreshToken)
+        return Optional.of(refreshToken)
     }
 
-    override fun findByToken(refreshToken: String?): Optional<RefreshToken> {
-        return refreshTokenRepository.findByToken(refreshToken)
+    override suspend fun findByToken(refreshToken: String?): Optional<RefreshToken> {
+        return withContext(Dispatchers.IO) {
+            refreshTokenRepository.findByToken(refreshToken)
+        }
     }
 
     override fun verifyExpiration(refreshToken: RefreshToken): RefreshToken {

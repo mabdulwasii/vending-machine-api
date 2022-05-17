@@ -6,6 +6,6 @@ import com.vending.api.dto.RefreshTokenRequest
 
 interface AuthService {
     @Throws(Exception::class)
-    fun authenticate(loginDetails: LoginDetails): ApiResponse
-    fun refreshToken(request: RefreshTokenRequest): ApiResponse
+    suspend fun authenticate(loginDetails: LoginDetails): ApiResponse
+    suspend fun refreshToken(request: RefreshTokenRequest): ApiResponse
 }
