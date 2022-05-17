@@ -8,7 +8,7 @@ import kotlin.reflect.KClass
 @Constraint(validatedBy = [MultipleOfFiveValidatorConstraint::class])
 @Target(AnnotationTarget.FIELD, AnnotationTarget.ANNOTATION_CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class MultipleOfFive(
+annotation class MultiplesOfFive(
     val message: String = "Value must be multiple of five",
     val groups: Array<KClass<*>> = [],
     val payload: Array<KClass<out Payload>> = []

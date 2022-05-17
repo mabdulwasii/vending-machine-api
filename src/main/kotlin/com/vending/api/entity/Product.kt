@@ -1,5 +1,6 @@
 package com.vending.api.entity
 
+import com.vending.api.utils.validate.MultiplesOfFive
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.FetchType
@@ -23,6 +24,7 @@ class Product(
     var amountAvailable: Int = 0,
 
     @NotNull
+    @MultiplesOfFive
     var cost: Int = 0,
 
     @NotNull
