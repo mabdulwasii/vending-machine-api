@@ -9,7 +9,6 @@ data class CreateUserRequest(
     val username: String,
 
     @ValidPassword
-    @NotEmpty(message = "Password cannot be empty")
     var password: String,
 
     @NotEmpty(message = "Confirm password cannot be empty")

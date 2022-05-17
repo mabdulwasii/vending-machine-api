@@ -10,8 +10,6 @@ import java.net.SocketTimeoutException
 import java.util.function.Consumer
 import java.util.stream.Collectors
 import org.slf4j.LoggerFactory
-import org.springframework.core.Ordered
-import org.springframework.core.annotation.Order
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -28,7 +26,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.MissingServletRequestParameterException
 import org.springframework.web.bind.annotation.ControllerAdvice
 import org.springframework.web.bind.annotation.ExceptionHandler
-import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.client.HttpClientErrorException
 import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.ResourceAccessException
@@ -41,10 +38,7 @@ import javax.persistence.NonUniqueResultException
 import javax.validation.ConstraintViolation
 import javax.validation.ConstraintViolationException
 
-
-@Order(Ordered.HIGHEST_PRECEDENCE)
 @ControllerAdvice
-@RestController
 class RestApiExceptionHandler : ResponseEntityExceptionHandler() {
     private val log = LoggerFactory.getLogger(javaClass)
     override fun handleHttpMessageNotReadable(
@@ -185,9 +179,9 @@ class RestApiExceptionHandler : ResponseEntityExceptionHandler() {
             errors.add(errorMessage)
         })
         return buildErrorResponseEntity(
-            
+
             java.lang.String.join("\n", errors).replace(",", ""),
-            ex.localizedMessage,
+            listOf<String>(),
             HttpStatus.BAD_REQUEST
         )
     }
@@ -278,7 +272,7 @@ class RestApiExceptionHandler : ResponseEntityExceptionHandler() {
         )
     }
 
-    //Handle GenralExceptiom
+    //Handle Exceptions
     @ExceptionHandler(Exception::class)
     fun handleAllException(ex: Exception, request: WebRequest?): ResponseEntity<Any> {
         log.error("handleAllException ", ex)

@@ -11,6 +11,9 @@ import com.vending.api.utils.ApiResponseUtils.Companion.buildSuccessfulApiRespon
 import com.vending.api.utils.Constant
 import com.vending.api.utils.DtoTransformerUtils.Companion.transformCreateUserRequestToUserEntity
 import com.vending.api.utils.SecurityUtils
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -22,15 +25,16 @@ class UserService(
     val roleRepository: RoleRepository,
     val passwordEncoder: PasswordEncoder
 ) {
-
     fun save(user: User) = userRepository.save(user)
-    fun createUser(request: CreateUserRequest): ApiResponse {
+    suspend fun createUser(request: CreateUserRequest): ApiResponse {
         SecurityUtils.ensurePasswordMatch(request.password, request.confirmPassword)
-        val encodedPassword = passwordEncoder.encode(request.password)
-        request.password = encodedPassword
         val roles = setOf<Role>()
-        roleRepository.findByName(request.role)
-            ?.let { roles.plus(it) } ?: throw InvalidRoleException("Invalid user role supplied")
+        var encodedPassword: String? = null
+        withContext(Dispatchers.IO) {
+            encodedPassword = passwordEncoder.encode(request.password)
+            roleRepository.findByName(request.role)
+        }?.let { roles.plus(it) } ?: throw InvalidRoleException("Invalid user role supplied")
+        request.password = encodedPassword!!
         val user = transformCreateUserRequestToUserEntity(request)
         return buildSuccessfulApiResponse(save(user), Constant.USER_CREATED_SUCCESSFULLY, HttpStatus.CREATED)
     }

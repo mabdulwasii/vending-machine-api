@@ -5,6 +5,7 @@ import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.Index
 import javax.persistence.JoinColumn
@@ -22,7 +23,7 @@ import javax.validation.constraints.Size
 )
 class User(
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     var id: Long? = null,
 
     @NotNull
@@ -40,6 +41,7 @@ class User(
     var deposit: Int = 0,
 
     @ManyToMany(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinTable(
         name = "user_role",
         joinColumns = [JoinColumn(name = "user_id")],
