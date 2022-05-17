@@ -1,6 +1,5 @@
 package com.vending.api.entity
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.FetchType
@@ -31,7 +30,7 @@ class User(
     @Column(length = 200, unique = true, nullable = false)
     var username: String,
 
-    @JsonIgnore
+
     @NotNull
     @Size(min = 1, max = 256)
     @Column(name = "password", length = 256, nullable = false)
@@ -40,8 +39,7 @@ class User(
     @Column(name = "deposit")
     var deposit: Int = 0,
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JsonIgnore
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "user_role",
         joinColumns = [JoinColumn(name = "user_id")],
