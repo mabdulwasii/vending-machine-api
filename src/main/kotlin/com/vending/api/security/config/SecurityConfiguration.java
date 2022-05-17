@@ -6,6 +6,7 @@ import com.vending.api.security.service.DomainUserDetailsService;
 import com.vending.api.utils.JWTUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -69,9 +70,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 // Configure permissions
                 .authorizeRequests()
                 // Login CaptchaImage allows anonymous access
-                .antMatchers("/api/v1/authenticate").permitAll()
-                .antMatchers("/api/v1/register").permitAll()
-                .antMatchers("/api/v1/h2-console/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/api/user").permitAll()
+                .antMatchers("/h2-console/**").permitAll()
                 // Except for all the above requests, authentication is required
                 .anyRequest().authenticated();
 
