@@ -9,7 +9,7 @@ import com.vending.api.dto.UserDetailsImpl
 import com.vending.api.entity.RefreshToken
 import com.vending.api.service.AuthService
 import com.vending.api.service.RefreshTokenService
-import com.vending.api.utils.DtoTransformerUtils
+import com.vending.api.utils.ApiResponseUtils
 import com.vending.api.utils.JWTUtils
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.AuthenticationManager
@@ -48,11 +48,11 @@ class AuthServiceImpl(
             val roles = loginUser.authorities
                 .map { grantedAuthority -> grantedAuthority.authority }
             val jwt = Jwt(jwtToken!!, loginUser.id!!, loginUser.username, roles)
-            return DtoTransformerUtils.buildSuccessApiResponse("Login successful", jwt, HttpStatus.OK)
+            return ApiResponseUtils.buildSuccessfulApiResponse(jwt, "Login successful", HttpStatus.OK)
         } ?: throw BadCredentialsException("Invalid login details")
     }
 
-    override fun refreshToken(request: RefreshTokenRequest): RefreshTokenResponse {
+    override fun refreshToken(request: RefreshTokenRequest): ApiResponse {
         val refreshTokenRequest = request.refreshToken
         var authentication: Authentication? = null
         refreshTokenService.findByToken(refreshTokenRequest)
@@ -74,9 +74,14 @@ class AuthServiceImpl(
         authentication?.let { it ->
             SecurityContextHolder.getContext().authentication = it
             val jwtToken = jwtUtils.generateJwtToken(it)
-            jwtToken?.let {
-                return RefreshTokenResponse(it, refreshTokenRequest)
+            val refreshTokenResponse = jwtToken?.let {
+                RefreshTokenResponse(it, refreshTokenRequest)
             } ?: throw Exception("Fail to refresh token")
+            return ApiResponseUtils.buildSuccessfulApiResponse(
+                refreshTokenResponse,
+                "success",
+                HttpStatus.OK
+            )
         } ?: throw Exception("User authentication failed")
     }
 }

@@ -11,6 +11,7 @@ import com.vending.api.utils.ApiResponseUtils.Companion.buildSuccessfulApiRespon
 import com.vending.api.utils.Constant
 import com.vending.api.utils.DtoTransformerUtils.Companion.transformCreateUserRequestToUserEntity
 import com.vending.api.utils.SecurityUtils
+import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
@@ -31,7 +32,7 @@ class UserService(
         roleRepository.findByName(request.role)
             ?.let { roles.plus(it) } ?: throw InvalidRoleException("Invalid user role supplied")
         val user = transformCreateUserRequestToUserEntity(request)
-        return buildSuccessfulApiResponse(save(user), Constant.USER_CREATED_SUCCESSFULLY)
+        return buildSuccessfulApiResponse(save(user), Constant.USER_CREATED_SUCCESSFULLY, HttpStatus.CREATED)
     }
 
 }

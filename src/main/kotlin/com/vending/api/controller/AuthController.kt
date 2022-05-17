@@ -1,9 +1,7 @@
 package com.vending.api.controller
 
-import com.vending.api.dto.Jwt
 import com.vending.api.dto.LoginDetails
 import com.vending.api.dto.RefreshTokenRequest
-import com.vending.api.dto.RefreshTokenResponse
 import com.vending.api.service.AuthService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.PostMapping
@@ -18,13 +16,13 @@ class AuthController(private val authService: AuthService) {
     @PostMapping("/authenticate")
     @Throws(Exception::class)
     fun authenticate(@RequestBody @Valid loginDetails: LoginDetails): ResponseEntity<*> {
-        val token: Jwt = authService.authenticate(loginDetails)
-        return ResponseEntity.ok(token)
+        val response = authService.authenticate(loginDetails)
+        return ResponseEntity(response, response.status)
     }
 
     @PostMapping("/refresh_token")
     fun refreshToken(@RequestBody @Valid refreshTokenRequest: RefreshTokenRequest): ResponseEntity<*> {
-        val refreshTokenResponse: RefreshTokenResponse = authService.refreshToken(refreshTokenRequest)
-        return ResponseEntity.ok(refreshTokenResponse)
+        val response = authService.refreshToken(refreshTokenRequest)
+        return ResponseEntity(response, response.status)
     }
 }
