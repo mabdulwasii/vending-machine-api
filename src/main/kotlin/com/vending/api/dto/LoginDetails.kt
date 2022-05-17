@@ -1,6 +1,6 @@
 package com.vending.api.dto
 
-import com.vending.api.utils.password.ValidPassword
+import com.vending.api.utils.validate.ValidPassword
 import javax.validation.constraints.NotEmpty
 
 data class LoginDetails(
