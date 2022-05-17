@@ -7,9 +7,11 @@ import com.vending.api.dto.RefreshTokenRequest
 import com.vending.api.dto.RefreshTokenResponse
 import com.vending.api.dto.UserDetailsImpl
 import com.vending.api.entity.RefreshToken
+import com.vending.api.exception.GenericException
+import com.vending.api.exception.TokenRefreshExpiredException
 import com.vending.api.service.AuthService
 import com.vending.api.service.RefreshTokenService
-import com.vending.api.utils.ApiResponseUtils
+import com.vending.api.utils.ApiResponseUtils.Companion.buildSuccessfulApiResponse
 import com.vending.api.utils.JWTUtils
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.AuthenticationManager
@@ -49,40 +51,29 @@ class AuthServiceImpl(
                 .map { it.token }
                 .orElse("")
             val jwt = Jwt(jwtToken!!, refreshToken, loginUser.id!!, loginUser.username)
-            return ApiResponseUtils.buildSuccessfulApiResponse(jwt, "Login successful", HttpStatus.OK)
+            return buildSuccessfulApiResponse(jwt, "Login successful", HttpStatus.OK)
         } ?: throw BadCredentialsException("Invalid login details")
     }
 
     override suspend fun refreshToken(request: RefreshTokenRequest): ApiResponse {
         val refreshTokenRequest = request.refreshToken
-        var authentication: Authentication? = null
+        var token: String? = null
         refreshTokenService.findByToken(refreshTokenRequest)
             .map(refreshTokenService::verifyExpiration)
             .map(RefreshToken::user)
             .map {
                 try {
-                    authentication = authenticationManager.authenticate(
-                        UsernamePasswordAuthenticationToken(it.username, it.password)
-                    )
-                } catch (exception: BadCredentialsException) {
-                    exception.printStackTrace()
-                    throw BadCredentialsException("Bad Credentials")
+                    token = jwtUtils.generateToken(UserDetailsImpl.build(it))!!
                 } catch (exception: Exception) {
                     exception.printStackTrace()
-                    throw Exception("User authentication failed")
+                    throw GenericException("Failed to generate new token")
                 }
             }
-        authentication?.let { it ->
-            SecurityContextHolder.getContext().authentication = it
-            val jwtToken = jwtUtils.generateJwtToken(it)
-            val refreshTokenResponse = jwtToken?.let {
-                RefreshTokenResponse(it, refreshTokenRequest)
-            } ?: throw Exception("Fail to refresh token")
-            return ApiResponseUtils.buildSuccessfulApiResponse(
-                refreshTokenResponse,
-                "success",
-                HttpStatus.OK
-            )
-        } ?: throw Exception("User authentication failed")
+
+        token?.let {
+            val tokenResponse = RefreshTokenResponse(it, refreshTokenRequest)
+            return buildSuccessfulApiResponse(tokenResponse, "Token refreshed successfully")
+        } ?: throw TokenRefreshExpiredException(refreshTokenRequest, "Invalid refresh token")
+
     }
 }

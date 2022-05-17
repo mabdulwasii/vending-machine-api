@@ -11,5 +11,12 @@ class ApiResponseUtils {
             data = save,
             status = status
         )
+
+        fun buildSuccessfulApiResponse(save: Any, message: String) = ApiResponse(
+            error = false,
+            message = message,
+            data = save,
+            status = HttpStatus.OK
+        )
     }
 }

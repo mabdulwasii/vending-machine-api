@@ -29,14 +29,16 @@ class JWTUtils {
 
     fun generateJwtToken(authentication: Authentication): String? {
         val userPrincipal: UserDetailsImpl = authentication.principal as UserDetailsImpl
-        log.info("userPrincipal generateJwtToken {}", userPrincipal)
-        log.info("username generateJwtToken {}", userPrincipal.username)
+        return generateToken(userPrincipal)
+    }
+
+     fun generateToken(userDetails: UserDetailsImpl): String? {
         val claims: MutableMap<String, Any> = HashMap()
-        claims["username"] = userPrincipal.username as Any
-        claims["id"] = userPrincipal.id as Any
-        claims["roles"] = userPrincipal.authorities as Any
+        claims["username"] = userDetails.username as Any
+        claims["id"] = userDetails.id as Any
+        claims["roles"] = userDetails.authorities as Any
         return Jwts.builder()
-            .setSubject(userPrincipal.username)
+            .setSubject(userDetails.username)
             .setClaims(claims)
             .setIssuedAt(Date())
             .setExpiration(Date(Date().time + expiration))
