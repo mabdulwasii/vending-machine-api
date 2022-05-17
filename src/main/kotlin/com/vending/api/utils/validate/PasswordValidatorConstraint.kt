@@ -9,9 +9,9 @@ import org.passay.WhitespaceRule
 import javax.validation.ConstraintValidator
 import javax.validation.ConstraintValidatorContext
 
-class PasswordValidatorConstraint : ConstraintValidator<ValidPassword?, String?> {
+class PasswordValidatorConstraint : ConstraintValidator<ValidPassword?, String> {
     override fun initialize(constraintAnnotation: ValidPassword?) {}
-    override fun isValid(password: String?, context: ConstraintValidatorContext): Boolean {
+    override fun isValid(password: String, context: ConstraintValidatorContext): Boolean {
         val validator = PasswordValidator(
             listOf( // at least 8 characters
                 LengthRule(8, 255),  // at least one upper-case character
