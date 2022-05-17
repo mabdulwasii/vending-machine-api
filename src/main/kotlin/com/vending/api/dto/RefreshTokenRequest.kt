@@ -4,5 +4,5 @@ import javax.validation.constraints.NotEmpty
 
 data class RefreshTokenRequest (
     @NotEmpty(message = "Refresh token is required")
-    private val refreshToken: String
+    val refreshToken: String
 )

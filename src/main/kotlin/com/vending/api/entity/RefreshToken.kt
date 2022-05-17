@@ -16,7 +16,7 @@ import javax.persistence.Table
 class RefreshToken (
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    var id: Long = 0,
+    var id: Long? = null,
 
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
