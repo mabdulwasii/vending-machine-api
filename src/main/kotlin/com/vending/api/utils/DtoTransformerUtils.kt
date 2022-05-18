@@ -12,9 +12,10 @@ class DtoTransformerUtils {
         )
 
         fun transformUserEntityToUserDto(user: User) = UserDto(
-            user.id,
-            user.username,
-            user.deposit
+            id = user.id,
+            username = user.username,
+            deposit = user.deposit,
+            roles = user.roles.map { role -> role.name.name }.toSet()
         )
     }
 }
