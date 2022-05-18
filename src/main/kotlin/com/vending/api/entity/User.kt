@@ -1,5 +1,6 @@
 package com.vending.api.entity
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.FetchType
@@ -32,6 +33,7 @@ class User(
 
 
     @NotNull
+    @JsonIgnore
     @Size(min = 1, max = 256)
     @Column(name = "password", length = 256, nullable = false)
     var password: String,
@@ -45,6 +47,6 @@ class User(
         joinColumns = [JoinColumn(name = "user_id")],
         inverseJoinColumns = [JoinColumn(name = "role_id")]
     )
-    var roles: Set<Role> = HashSet()
+    var roles: MutableSet<Role> = HashSet()
 
 )

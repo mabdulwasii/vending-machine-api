@@ -31,6 +31,7 @@ import org.springframework.web.client.HttpServerErrorException
 import org.springframework.web.client.ResourceAccessException
 import org.springframework.web.context.request.WebRequest
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException
+import org.springframework.web.server.ResponseStatusException
 import org.springframework.web.servlet.NoHandlerFoundException
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler
 import javax.persistence.EntityNotFoundException
@@ -257,6 +258,17 @@ class RestApiExceptionHandler : ResponseEntityExceptionHandler() {
     }
 
     //Handle DataIntegrityViolationException, inspects the cause for different DB causes.
+    @ExceptionHandler(ResponseStatusException::class)
+    fun handleResponseStatusException(ex: ResponseStatusException): ResponseEntity<Any> {
+        log.error("handleResponseStatusException ", ex)
+        return buildErrorResponseEntity(
+            ex.localizedMessage,
+            ex.message,
+            ex.status
+        )
+    }
+
+    //Handle DataIntegrityViolationException, inspects the cause for different DB causes.
     @ExceptionHandler(DataIntegrityViolationException::class)
     fun handleDataIntegrityViolation(ex: DataIntegrityViolationException): ResponseEntity<Any> {
         log.error("handleDataIntegrityViolation ", ex)
@@ -358,8 +370,8 @@ class RestApiExceptionHandler : ResponseEntityExceptionHandler() {
     fun handleGenericException(ex: GenericException): ResponseEntity<Any> {
         log.error("handleGenericException ", ex)
         return buildErrorResponseEntity(
-            ex.message,
             ex.localizedMessage,
+            listOf<String>(),
             HttpStatus.BAD_REQUEST
         )
     }
