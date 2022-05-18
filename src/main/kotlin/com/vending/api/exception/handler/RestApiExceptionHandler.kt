@@ -7,6 +7,22 @@ import com.vending.api.exception.InvalidUserNameException
 import com.vending.api.exception.PasswordMismatchException
 import com.vending.api.exception.TokenRefreshExpiredException
 import com.vending.api.exception.UserNameExistsException
+import com.vending.api.utils.ConstantUtils.API_TIMEOUT
+import com.vending.api.utils.ConstantUtils.BAD_CREDENTIALS
+import com.vending.api.utils.ConstantUtils.CONNECTION_ERROR
+import com.vending.api.utils.ConstantUtils.DATABASE_ERROR
+import com.vending.api.utils.ConstantUtils.ENTITY_EXISTS
+import com.vending.api.utils.ConstantUtils.ERROR_PLEASE_TRY_AGAIN
+import com.vending.api.utils.ConstantUtils.ERROR_WRITING_JSON
+import com.vending.api.utils.ConstantUtils.INSUFFICIENT_AUTHENTICATION
+import com.vending.api.utils.ConstantUtils.INVALID_DATA
+import com.vending.api.utils.ConstantUtils.INVALID_NUMBER_FORMAT
+import com.vending.api.utils.ConstantUtils.INVALID_PARAMETERS
+import com.vending.api.utils.ConstantUtils.INVALID_REQUEST_PAYLOAD
+import com.vending.api.utils.ConstantUtils.MEDIA_NOT_SUPPORT
+import com.vending.api.utils.ConstantUtils.NULL_ERROR
+import com.vending.api.utils.ConstantUtils.PARAMETER_MISSING
+import com.vending.api.utils.ConstantUtils.USERNAME_NOT_FOUND
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.util.function.Consumer
@@ -51,7 +67,7 @@ class RestApiExceptionHandler : ResponseEntityExceptionHandler() {
         request: WebRequest
     ): ResponseEntity<Any> {
         log.error(" handleHttpMessageNotReadable ", ex)
-        val errorMessage = "Invalid request payload"
+        val errorMessage = INVALID_REQUEST_PAYLOAD
         return buildErrorResponseEntity(
            errorMessage, ex.localizedMessage,
             HttpStatus.BAD_REQUEST
@@ -73,7 +89,7 @@ class RestApiExceptionHandler : ResponseEntityExceptionHandler() {
     @ExceptionHandler(IllegalArgumentException::class)
     fun handleIllegalArgumentException(ex: IllegalArgumentException): ResponseEntity<Any> {
         log.error(" handleIllegalArgumentException ", ex)
-        val errorMessage = "Invalid parameters"
+        val errorMessage = INVALID_PARAMETERS
         return buildErrorResponseEntity(
              errorMessage, ex.localizedMessage,
             HttpStatus.BAD_REQUEST
@@ -107,7 +123,7 @@ class RestApiExceptionHandler : ResponseEntityExceptionHandler() {
     @ExceptionHandler(AccessDeniedException::class)
     fun handleAccessDeniedException(ex: AccessDeniedException): ResponseEntity<Any> {
         log.error(" handleAccessDeniedException ", ex)
-        val errorMessage = "Access denied"
+        val errorMessage = "Oops, you do not have access to this resource"
         return buildErrorResponseEntity(
              errorMessage, ex.localizedMessage,
             HttpStatus.UNAUTHORIZED
@@ -142,7 +158,7 @@ class RestApiExceptionHandler : ResponseEntityExceptionHandler() {
         status: HttpStatus, request: WebRequest
     ): ResponseEntity<Any> {
         log.error(" handleMissingServletRequestParameter ", ex)
-        val errorMessage: String = ex.parameterName + " parameter is missing"
+        val errorMessage: String = ex.parameterName + PARAMETER_MISSING
         return buildErrorResponseEntity(
              errorMessage, ex.localizedMessage,
             HttpStatus.BAD_REQUEST
@@ -158,7 +174,7 @@ class RestApiExceptionHandler : ResponseEntityExceptionHandler() {
         log.error(" handleHttpMediaTypeNotSupported ", ex)
         val builder = StringBuilder()
         builder.append(ex.contentType)
-        builder.append(" media type is not supported. Supported media types are ")
+        builder.append(MEDIA_NOT_SUPPORT)
         ex.supportedMediaTypes.forEach(Consumer { t: MediaType? -> builder.append(t).append(", ") })
         return buildErrorResponseEntity(
             
@@ -220,7 +236,7 @@ class RestApiExceptionHandler : ResponseEntityExceptionHandler() {
         request: WebRequest
     ): ResponseEntity<Any> {
         log.error(" handleHttpMessageNotWritable ", ex)
-        val errorMessage = "Error writing JSON output"
+        val errorMessage = ERROR_WRITING_JSON
         println("Error writing JSON output ==> Cause " + ex.cause)
         return buildErrorResponseEntity(
              errorMessage, ex.localizedMessage,
@@ -276,12 +292,12 @@ class RestApiExceptionHandler : ResponseEntityExceptionHandler() {
         log.error("handleDataIntegrityViolation ", ex)
         return if (ex.cause is ConstraintViolationException) {
             buildErrorResponseEntity(
-                 "Database error", ex.localizedMessage,
+                DATABASE_ERROR, ex.localizedMessage,
                 HttpStatus.BAD_REQUEST
             )
         }
         else buildErrorResponseEntity(
-             "Invalid input data", ex.localizedMessage,
+             INVALID_DATA, ex.localizedMessage,
             HttpStatus.BAD_REQUEST
         )
     }
@@ -292,18 +308,18 @@ class RestApiExceptionHandler : ResponseEntityExceptionHandler() {
         log.error("handleAllException ", ex)
         return buildErrorResponseEntity(
             ex.localizedMessage,
-            Any(),
+            listOf<String>(),
             HttpStatus.BAD_REQUEST
         )
     }
 
-    //Handle GenralExceptiom
+    //Handle GeneralExceptiom
     @ExceptionHandler(Throwable::class)
     fun handleAllException(ex: Throwable, request: WebRequest?): ResponseEntity<Any> {
         log.error("handleAllThrowableException ", ex)
         return buildErrorResponseEntity(
-            
-            "Error!, please try again",
+
+            ERROR_PLEASE_TRY_AGAIN,
             ex.localizedMessage, HttpStatus.BAD_REQUEST
         )
     }
@@ -312,8 +328,8 @@ class RestApiExceptionHandler : ResponseEntityExceptionHandler() {
     fun handleHttpServerErrorException(ex: HttpServerErrorException): ResponseEntity<Any> {
         log.error("handleHttpServerErrorException ", ex)
         return buildErrorResponseEntity(
-            
-            "Connection error, please try again",
+
+            CONNECTION_ERROR,
             ex.localizedMessage, HttpStatus.BAD_REQUEST
         )
     }
@@ -322,8 +338,8 @@ class RestApiExceptionHandler : ResponseEntityExceptionHandler() {
     fun handleBadCredentialsException(ex: BadCredentialsException): ResponseEntity<Any> {
         log.error("handleBadCredentialsException ", ex)
         return buildErrorResponseEntity(
-            
-            "Bad credentials",
+
+            BAD_CREDENTIALS,
             ex.localizedMessage, HttpStatus.UNAUTHORIZED
         )
     }
@@ -332,8 +348,7 @@ class RestApiExceptionHandler : ResponseEntityExceptionHandler() {
     fun handleUsernameNotFoundException(ex: UsernameNotFoundException): ResponseEntity<Any> {
         log.error("handleUsernameNotFoundException ", ex)
         return buildErrorResponseEntity(
-            
-            "Username not found!",
+            USERNAME_NOT_FOUND,
             ex.localizedMessage, HttpStatus.UNAUTHORIZED
         )
     }
@@ -342,8 +357,7 @@ class RestApiExceptionHandler : ResponseEntityExceptionHandler() {
     fun handleAInsufficientAuthenticationException(ex: InsufficientAuthenticationException): ResponseEntity<Any> {
         log.error("handleAInsufficientAuthenticationException ", ex)
         return buildErrorResponseEntity(
-            
-            "Insufficient authentication",
+            INSUFFICIENT_AUTHENTICATION,
             ex.localizedMessage, HttpStatus.UNAUTHORIZED
         )
     }
@@ -352,7 +366,7 @@ class RestApiExceptionHandler : ResponseEntityExceptionHandler() {
     fun handleNullPointerException(ex: NullPointerException): ResponseEntity<Any> {
         log.error("handleNullPointerException ", ex)
         return buildErrorResponseEntity(
-            "A null error occurred! Please try again",
+            NULL_ERROR,
             ex.localizedMessage, HttpStatus.BAD_REQUEST
         )
     }
@@ -361,7 +375,7 @@ class RestApiExceptionHandler : ResponseEntityExceptionHandler() {
     fun handleNumberFormatException(ex: NumberFormatException): ResponseEntity<Any> {
         log.error("handleNumberFormatException ", ex)
         return buildErrorResponseEntity(
-            "Invalid Number format",
+            INVALID_NUMBER_FORMAT,
             ex.localizedMessage, HttpStatus.BAD_REQUEST
         )
     }
@@ -400,9 +414,9 @@ class RestApiExceptionHandler : ResponseEntityExceptionHandler() {
     fun handleNonUniqueResultException(ex: NonUniqueResultException): ResponseEntity<Any> {
         log.error("handleNonUniqueResultException ", ex)
         return buildErrorResponseEntity(
-            
-            "Data already exist",
-            ex.localizedMessage, HttpStatus.BAD_REQUEST
+            ENTITY_EXISTS,
+            ex.localizedMessage,
+            HttpStatus.BAD_REQUEST
         )
     }
 
@@ -410,9 +424,9 @@ class RestApiExceptionHandler : ResponseEntityExceptionHandler() {
     fun handleSocketTimeoutException(ex: SocketTimeoutException): ResponseEntity<Any> {
         log.error("handleNonUniqueResultException ", ex)
         return buildErrorResponseEntity(
-            
-            "Api timeout",
-            ex.localizedMessage, HttpStatus.REQUEST_TIMEOUT
+            API_TIMEOUT,
+            ex.localizedMessage,
+            HttpStatus.REQUEST_TIMEOUT
         )
     }
 

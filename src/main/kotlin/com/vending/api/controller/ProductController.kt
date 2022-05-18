@@ -1,9 +1,11 @@
 package com.vending.api.controller
 
 import com.vending.api.dto.ApiResponse
+import com.vending.api.dto.BuyProductDTO
 import com.vending.api.dto.ProductDTO
 import com.vending.api.exception.GenericException
 import com.vending.api.service.ProductService
+import com.vending.api.utils.ConstantUtils.ID_NOT_NULL
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.annotation.Secured
@@ -45,7 +47,7 @@ class ProductController(
         try{
             product.id!!
         }catch (exception: Exception){
-            throw GenericException("Id cannot be null")
+            throw GenericException(ID_NOT_NULL)
         }
         val response = productService.updateUser(product)
         return ResponseEntity(response, response.status)
@@ -72,6 +74,14 @@ class ProductController(
     ): ResponseEntity<ApiResponse> {
         log.debug("REST request to delete a User with id: {}", id)
         val response = productService.deleteProduct(id)
+        return ResponseEntity(response, response.status)
+    }
+
+    @Secured("ROLE_BUYER")
+    @PostMapping("/buy")
+    suspend fun buyProduct(@RequestBody @Valid buyProductDTO: BuyProductDTO): ResponseEntity<ApiResponse> {
+        log.debug("REST request to buy product: {}", buyProductDTO)
+        val response = productService.buyProduct(buyProductDTO)
         return ResponseEntity(response, response.status)
     }
 }

@@ -12,6 +12,8 @@ import com.vending.api.exception.TokenRefreshExpiredException
 import com.vending.api.service.AuthService
 import com.vending.api.service.RefreshTokenService
 import com.vending.api.utils.ApiResponseUtils.Companion.buildSuccessApiResponse
+import com.vending.api.utils.ConstantUtils.INVALID_REFRESH_TOKEN
+import com.vending.api.utils.ConstantUtils.TOKEN_FAIL
 import com.vending.api.utils.JWTUtils
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.AuthenticationManager
@@ -66,14 +68,14 @@ class AuthServiceImpl(
                     token = jwtUtils.generateToken(UserDetailsImpl.build(it))!!
                 } catch (exception: Exception) {
                     exception.printStackTrace()
-                    throw GenericException("Failed to generate new token")
+                    throw GenericException(TOKEN_FAIL)
                 }
             }
 
         token?.let {
             val tokenResponse = RefreshTokenResponse(it, refreshTokenRequest)
             return buildSuccessApiResponse(tokenResponse, "Token refreshed successfully")
-        } ?: throw TokenRefreshExpiredException(refreshTokenRequest, "Invalid refresh token")
+        } ?: throw TokenRefreshExpiredException(refreshTokenRequest, INVALID_REFRESH_TOKEN)
 
     }
 }

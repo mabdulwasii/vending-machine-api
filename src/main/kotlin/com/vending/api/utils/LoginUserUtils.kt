@@ -2,6 +2,9 @@ package com.vending.api.utils
 
 import com.vending.api.dto.UserDetailsImpl
 import com.vending.api.exception.GenericException
+import com.vending.api.exception.InvalidUserNameException
+import com.vending.api.utils.ConstantUtils.ACCESS_DENIED
+import com.vending.api.utils.ConstantUtils.INVALID_USER_PLEASE_LOGIN
 import org.springframework.security.core.context.SecurityContextHolder
 
 class LoginUserUtils {
@@ -11,12 +14,12 @@ class LoginUserUtils {
             authentication?.let {
                 val userDetails: UserDetailsImpl = it.principal as UserDetailsImpl
                 return userDetails.username
-            } ?: throw GenericException("Invalid user, please login")
+            } ?: throw InvalidUserNameException(INVALID_USER_PLEASE_LOGIN)
         }
 
         fun ensureSellerIdMatches(sellerId: String, username: String) {
             if (!sellerId.equals(username, true)){
-                throw GenericException("Access denied, operation cannot be performed by you")
+                throw GenericException(ACCESS_DENIED)
             }
         }
     }

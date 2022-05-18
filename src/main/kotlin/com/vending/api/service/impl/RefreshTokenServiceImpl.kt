@@ -5,6 +5,7 @@ import com.vending.api.exception.TokenRefreshExpiredException
 import com.vending.api.repository.RefreshTokenRepository
 import com.vending.api.repository.UserRepository
 import com.vending.api.service.RefreshTokenService
+import com.vending.api.utils.ConstantUtils.INVALID_REFRESH_TOKEN
 import com.vending.api.utils.JWTUtils
 import java.time.Instant
 import java.util.Optional
@@ -56,10 +57,7 @@ class RefreshTokenServiceImpl(
     override fun verifyExpiration(refreshToken: RefreshToken): RefreshToken {
         if (refreshToken.expiryDate < Instant.now()) {
             refreshTokenRepository.delete(refreshToken)
-            throw TokenRefreshExpiredException(
-                refreshToken.token,
-                "Refresh token has expired. Please login again"
-            )
+            throw TokenRefreshExpiredException(refreshToken.token, INVALID_REFRESH_TOKEN)
         }
         return refreshToken
     }

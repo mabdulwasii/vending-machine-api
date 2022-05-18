@@ -2,19 +2,30 @@ package com.vending.api.service.impl
 
 import com.vending.api.dto.ApiResponse
 import com.vending.api.dto.CreateUserRequest
+import com.vending.api.dto.Deposit
 import com.vending.api.dto.UserDTO
 import com.vending.api.entity.Role
 import com.vending.api.entity.User
 import com.vending.api.entity.enumeration.RoleType
+import com.vending.api.exception.InvalidUserNameException
 import com.vending.api.exception.UserNameExistsException
 import com.vending.api.repository.RefreshTokenRepository
 import com.vending.api.repository.RoleRepository
 import com.vending.api.repository.UserRepository
 import com.vending.api.service.UserService
+import com.vending.api.utils.ApiResponseUtils.Companion.buildFailedApiResponse
 import com.vending.api.utils.ApiResponseUtils.Companion.buildSuccessApiResponse
-import com.vending.api.utils.Constant
+import com.vending.api.utils.ConstantUtils
+import com.vending.api.utils.ConstantUtils.COULD_NOT_RETRIEVE_LOGIN_USER
+import com.vending.api.utils.ConstantUtils.COULD_NOT_RETRIEVE_USER
+import com.vending.api.utils.ConstantUtils.DEPOSIT_RESET_SUCCESSFUL
+import com.vending.api.utils.ConstantUtils.DEPOSIT_SUCCESSFUL
+import com.vending.api.utils.ConstantUtils.INVALID_USER_PLEASE_LOGIN
+import com.vending.api.utils.ConstantUtils.USERNAME_ALREADY_EXIST
+import com.vending.api.utils.ConstantUtils.USER_UPDATED_SUCCESSFULLY
 import com.vending.api.utils.DtoTransformerUtils.Companion.transformCreateUserRequestToUserEntity
 import com.vending.api.utils.DtoTransformerUtils.Companion.transformUserEntityToUserDto
+import com.vending.api.utils.LoginUserUtils
 import com.vending.api.utils.SecurityUtils.Companion.ensurePasswordMatch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -24,7 +35,6 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.server.ResponseStatusException
-
 
 @Service
 @Transactional
@@ -40,10 +50,8 @@ class UserServiceImpl(
     }
 
     override suspend fun createUser(request: CreateUserRequest): ApiResponse {
-        withContext(Dispatchers.IO) {
-            userRepository.findOneWithAuthoritiesByUsernameIgnoreCase(request.username)
-        }?.let {
-            throw UserNameExistsException("Username already exist")
+        getUserByUsername(request.username)?.let {
+            throw UserNameExistsException(USERNAME_ALREADY_EXIST)
         }
         ensurePasswordMatch(request.password, request.confirmPassword)
         val roles = mutableSetOf<Role>()
@@ -64,7 +72,7 @@ class UserServiceImpl(
             save(user)
         }
         val createdUserDto = transformUserEntityToUserDto(createdUser)
-        return buildSuccessApiResponse(createdUserDto, Constant.USER_CREATED_SUCCESSFULLY, HttpStatus.CREATED)
+        return buildSuccessApiResponse(createdUserDto, ConstantUtils.USER_CREATED_SUCCESSFULLY, HttpStatus.CREATED)
     }
 
     override suspend fun updateUser(userDto: UserDTO): ApiResponse {
@@ -81,8 +89,8 @@ class UserServiceImpl(
             }
             user.roles.addAll(roles)
             val updatedUser= userRepository.save(user)
-            return buildSuccessApiResponse(updatedUser, "User updated successfully")
-        } ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Could not retrieve user with the provided Id")
+            return buildSuccessApiResponse(updatedUser, USER_UPDATED_SUCCESSFULLY)
+        } ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, COULD_NOT_RETRIEVE_USER)
     }
 
     override suspend fun findAllUsers(): ApiResponse {
@@ -113,4 +121,28 @@ class UserServiceImpl(
         return buildSuccessApiResponse(allRoles, "Roles retrieved successfully")
     }
 
+    override suspend fun depositCoin(deposit: Deposit): ApiResponse {
+        val currentUsername = LoginUserUtils.getAuthUserId()
+        getUserByUsername(currentUsername)?.let {
+            it.deposit += deposit.amount
+            val updatedUserDeposit = userRepository.save(it)
+            return buildSuccessApiResponse(updatedUserDeposit, DEPOSIT_SUCCESSFUL)
+        }?: return buildFailedApiResponse(null, INVALID_USER_PLEASE_LOGIN)
+    }
+
+    override suspend fun resetDeposit(): ApiResponse {
+        val currentUsername = LoginUserUtils.getAuthUserId()
+        getUserByUsername(currentUsername)?.let {
+            it.deposit = 0
+            val updatedUser = userRepository.save(it)
+            val userDto = transformUserEntityToUserDto(updatedUser)
+            return buildFailedApiResponse(userDto, DEPOSIT_RESET_SUCCESSFUL)
+        }?: throw InvalidUserNameException(COULD_NOT_RETRIEVE_LOGIN_USER)
+    }
+
+    override suspend fun getUserByUsername(currentUsername: String): User? {
+        return withContext(Dispatchers.IO) {
+            userRepository.findOneWithAuthoritiesByUsernameIgnoreCase(currentUsername)
+        }
+    }
 }
