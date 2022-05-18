@@ -5,6 +5,8 @@ import com.vending.api.exception.GenericException
 import com.vending.api.exception.InvalidRoleException
 import com.vending.api.exception.InvalidUserNameException
 import com.vending.api.exception.PasswordMismatchException
+import com.vending.api.exception.TokenRefreshExpiredException
+import com.vending.api.exception.UserNameExistsException
 import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.util.function.Consumer
@@ -289,9 +291,9 @@ class RestApiExceptionHandler : ResponseEntityExceptionHandler() {
     fun handleAllException(ex: Exception, request: WebRequest?): ResponseEntity<Any> {
         log.error("handleAllException ", ex)
         return buildErrorResponseEntity(
-            
-            "An error occurred, please try again",
-            ex.localizedMessage, HttpStatus.BAD_REQUEST
+            ex.localizedMessage,
+            Any(),
+            HttpStatus.BAD_REQUEST
         )
     }
 
@@ -350,7 +352,6 @@ class RestApiExceptionHandler : ResponseEntityExceptionHandler() {
     fun handleNullPointerException(ex: NullPointerException): ResponseEntity<Any> {
         log.error("handleNullPointerException ", ex)
         return buildErrorResponseEntity(
-            
             "A null error occurred! Please try again",
             ex.localizedMessage, HttpStatus.BAD_REQUEST
         )
@@ -360,7 +361,6 @@ class RestApiExceptionHandler : ResponseEntityExceptionHandler() {
     fun handleNumberFormatException(ex: NumberFormatException): ResponseEntity<Any> {
         log.error("handleNumberFormatException ", ex)
         return buildErrorResponseEntity(
-            
             "Invalid Number format",
             ex.localizedMessage, HttpStatus.BAD_REQUEST
         )
@@ -369,6 +369,26 @@ class RestApiExceptionHandler : ResponseEntityExceptionHandler() {
     @ExceptionHandler(GenericException::class)
     fun handleGenericException(ex: GenericException): ResponseEntity<Any> {
         log.error("handleGenericException ", ex)
+        return buildErrorResponseEntity(
+            ex.localizedMessage,
+            listOf<String>(),
+            HttpStatus.BAD_REQUEST
+        )
+    }
+
+     @ExceptionHandler(TokenRefreshExpiredException::class)
+    fun handleTokenRefreshExpiredException(ex: TokenRefreshExpiredException): ResponseEntity<Any> {
+        log.error("handleTokenRefreshExpiredException ", ex)
+        return buildErrorResponseEntity(
+            ex.localizedMessage,
+            listOf<String>(),
+            HttpStatus.BAD_REQUEST
+        )
+    }
+
+     @ExceptionHandler(UserNameExistsException::class)
+    fun handleUserNameExistsException(ex: UserNameExistsException): ResponseEntity<Any> {
+        log.error("handleUserNameExistsException ", ex)
         return buildErrorResponseEntity(
             ex.localizedMessage,
             listOf<String>(),
