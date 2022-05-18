@@ -55,19 +55,12 @@
     </logger>
 
 
-    <logger name="ch.qos.logback" level="DEBUG"/>
+    <logger name="ch.qos.logback" level="INFO"/>
     <logger name="io.undertow" level="DEBUG"/>
-    <logger name="io.undertow.websockets.jsr" level="WARN"/>
-    <logger name="org.apache" level="WARN"/>
+    <logger name="io.undertow.websockets.jsr" level="INFO"/>
+    <logger name="org.apache" level="INFO"/>
     <logger name="org.apache.catalina.startup.DigesterFactory" level="INFO"/>
-    <logger name="org.hibernate.validator" level="INFO"/>
-    <logger name="org.hibernate" level="INFO"/>
-    <logger name="org.hibernate.ejb.HibernatePersistence" level="INFO"/>
-    <logger name="org.springframework" level="DEBUG"/>
-    <logger name="org.springframework.web" level="DEBUG"/>
-    <logger name="org.springframework.security" level="WARN"/>
-    <logger name="springfox" level="WARN"/>
-    <logger name="liquibase" level="WARN"/>
-    <logger name="LiquibaseSchemaResolver" level="WARN"/>
-    <logger name="springfox.documentation.schema.property" level="ERROR"/>
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="org.springframework.web" level="INFO"/>
+    <logger name="org.springframework.security" level="INFO"/>
 </configuration>

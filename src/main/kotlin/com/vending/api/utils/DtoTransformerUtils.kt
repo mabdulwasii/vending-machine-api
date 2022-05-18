@@ -15,7 +15,7 @@ class DtoTransformerUtils {
             id = user.id,
             username = user.username,
             deposit = user.deposit,
-            roles = user.roles.map { role -> role.name.name }.toSet()
+            roles = user.roles.map { role -> role.name.name }.toMutableSet()
         )
     }
 }

@@ -12,18 +12,11 @@ spring:
     driverClassName: org.h2.Driver
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
-    generate-ddl: true
-    show-sql: true
     hibernate:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
       ddl-auto: update
-    properties:
-      hibernate:
-        generate_statistics: true
-        format_sql: true
-        show-sql: true
 
   h2:
     console:
@@ -32,6 +25,7 @@ spring:
       settings:
         trace: true
         web-allow-others: true
+        web-admin-password:
 
   flyway:
     url: jdbc:h2:mem:vending
@@ -46,7 +40,6 @@ logging:
         type: trace
 
 token:
-  header: 'Authorization'
   expiration: 86400000
   refreshExpiration: 10000000
   secret: OWNlOTkwNzA0NWZkNmYzMjdmZGZmNjc1ZjgzZGVjNjE1MDU4OGI2NjUzOTJiMTIzOTA1ODlmZjEzMjNlMDBjMzFkMDExOGVmZTU1MTQ2OGE3NDFmMzk3YzQ1ZWRjYWNiMWU5ZTc5YzdiNTQxOWJlZjk0MzdmYTYzZjk1MWJlNWU=

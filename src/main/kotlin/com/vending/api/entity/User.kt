@@ -49,4 +49,8 @@ class User(
     )
     var roles: MutableSet<Role> = HashSet()
 
-)
+){
+    override fun toString(): String {
+        return "User(id=$id, username='$username', password='$password', deposit=$deposit, roles=$roles)"
+    }
+}

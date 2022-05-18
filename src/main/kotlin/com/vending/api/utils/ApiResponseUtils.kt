@@ -5,17 +5,17 @@ import org.springframework.http.HttpStatus
 
 class ApiResponseUtils {
     companion object {
-        fun buildSuccessfulApiResponse(save: Any, message: String, status: HttpStatus) = ApiResponse(
+        fun buildSuccessfulApiResponse(data: Any?, message: String, status: HttpStatus) = ApiResponse(
             error = false,
             message = message,
-            data = save,
+            data = data,
             status = status
         )
 
-        fun buildSuccessfulApiResponse(save: Any, message: String) = ApiResponse(
+        fun buildSuccessfulApiResponse(data: Any?, message: String) = ApiResponse(
             error = false,
             message = message,
-            data = save,
+            data = data,
             status = HttpStatus.OK
         )
     }

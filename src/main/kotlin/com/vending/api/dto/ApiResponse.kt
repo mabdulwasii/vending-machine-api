@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus
 data class ApiResponse(
     val error: Boolean,
     val message: String,
-    val data: Any,
+    val data: Any?,
     @JsonIgnore
     val status: HttpStatus
 )
