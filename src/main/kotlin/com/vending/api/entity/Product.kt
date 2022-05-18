@@ -1,6 +1,6 @@
 package com.vending.api.entity
 
-import com.vending.api.utils.validate.MultiplesOfFive
+import com.vending.api.utils.validation.MultiplesOfFive
 import javax.persistence.Column
 import javax.persistence.Entity
 import javax.persistence.FetchType

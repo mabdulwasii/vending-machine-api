@@ -1,4 +1,4 @@
-package com.vending.api.utils.validate
+package com.vending.api.utils.validation
 
 import javax.validation.ConstraintValidator
 import javax.validation.ConstraintValidatorContext
