@@ -11,7 +11,7 @@ import com.vending.api.exception.GenericException
 import com.vending.api.exception.TokenRefreshExpiredException
 import com.vending.api.service.AuthService
 import com.vending.api.service.RefreshTokenService
-import com.vending.api.utils.ApiResponseUtils.Companion.buildSuccessfulApiResponse
+import com.vending.api.utils.ApiResponseUtils.Companion.buildSuccessApiResponse
 import com.vending.api.utils.JWTUtils
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.AuthenticationManager
@@ -51,7 +51,7 @@ class AuthServiceImpl(
                 .map { it.token }
                 .orElse("")
             val jwt = Jwt(jwtToken!!, refreshToken, loginUser.id!!, loginUser.username)
-            return buildSuccessfulApiResponse(jwt, "Login successful", HttpStatus.OK)
+            return buildSuccessApiResponse(jwt, "Login successful", HttpStatus.OK)
         } ?: throw BadCredentialsException("Invalid login details")
     }
 
@@ -72,7 +72,7 @@ class AuthServiceImpl(
 
         token?.let {
             val tokenResponse = RefreshTokenResponse(it, refreshTokenRequest)
-            return buildSuccessfulApiResponse(tokenResponse, "Token refreshed successfully")
+            return buildSuccessApiResponse(tokenResponse, "Token refreshed successfully")
         } ?: throw TokenRefreshExpiredException(refreshTokenRequest, "Invalid refresh token")
 
     }

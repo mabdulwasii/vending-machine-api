@@ -2,22 +2,22 @@ package com.vending.api.service.impl
 
 import com.vending.api.dto.ApiResponse
 import com.vending.api.dto.CreateUserRequest
-import com.vending.api.dto.UserDto
+import com.vending.api.dto.UserDTO
 import com.vending.api.entity.Role
 import com.vending.api.entity.User
 import com.vending.api.entity.enumeration.RoleType
+import com.vending.api.exception.UserNameExistsException
 import com.vending.api.repository.RefreshTokenRepository
 import com.vending.api.repository.RoleRepository
 import com.vending.api.repository.UserRepository
 import com.vending.api.service.UserService
-import com.vending.api.utils.ApiResponseUtils.Companion.buildSuccessfulApiResponse
+import com.vending.api.utils.ApiResponseUtils.Companion.buildSuccessApiResponse
 import com.vending.api.utils.Constant
 import com.vending.api.utils.DtoTransformerUtils.Companion.transformCreateUserRequestToUserEntity
 import com.vending.api.utils.DtoTransformerUtils.Companion.transformUserEntityToUserDto
-import com.vending.api.utils.SecurityUtils
+import com.vending.api.utils.SecurityUtils.Companion.ensurePasswordMatch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.slf4j.LoggerFactory
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -34,14 +34,18 @@ class UserServiceImpl(
     val refreshTokenRepository: RefreshTokenRepository,
     val passwordEncoder: PasswordEncoder
 ) : UserService {
-    private val log = LoggerFactory.getLogger(javaClass)
 
     override suspend fun save(user: User) = withContext(Dispatchers.IO) {
         userRepository.save(user)
     }
 
     override suspend fun createUser(request: CreateUserRequest): ApiResponse {
-        SecurityUtils.ensurePasswordMatch(request.password, request.confirmPassword)
+        withContext(Dispatchers.IO) {
+            userRepository.findOneWithAuthoritiesByUsernameIgnoreCase(request.username)
+        }?.let {
+            throw UserNameExistsException("Username already exist")
+        }
+        ensurePasswordMatch(request.password, request.confirmPassword)
         val roles = mutableSetOf<Role>()
         var encodedPassword: String
         withContext(Dispatchers.IO) {
@@ -60,25 +64,24 @@ class UserServiceImpl(
             save(user)
         }
         val createdUserDto = transformUserEntityToUserDto(createdUser)
-        return buildSuccessfulApiResponse(createdUserDto, Constant.USER_CREATED_SUCCESSFULLY, HttpStatus.CREATED)
+        return buildSuccessApiResponse(createdUserDto, Constant.USER_CREATED_SUCCESSFULLY, HttpStatus.CREATED)
     }
 
-    override suspend fun updateUser(userDto: UserDto): ApiResponse {
-        val user = userRepository.findByIdOrNull(userDto.id!!)
+    override suspend fun updateUser(userDto: UserDTO): ApiResponse {
+        val user = userRepository.findByIdOrNull(userDto.id)
         val roles = mutableSetOf<Role>()
         user?.let {user ->
-            userDto.username?.let { user.username = it }
-            userDto.deposit?.let { user.deposit = it }
-            userDto.roles.forEach { roleString ->
+            user.username = userDto.username
+            user.deposit = userDto.deposit
+            userDto.roles.map { roleString ->
                 val role = roleRepository.findByName(RoleType.valueOf(roleString))
                 role?.let {
                     roles.add(it)
                 }
             }
-            log.info("Roles 000 {}", roles)
             user.roles.addAll(roles)
             val updatedUser= userRepository.save(user)
-            return buildSuccessfulApiResponse(updatedUser, "User updated successfully")
+            return buildSuccessApiResponse(updatedUser, "User updated successfully")
         } ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Could not retrieve user with the provided Id")
     }
 
@@ -86,12 +89,12 @@ class UserServiceImpl(
         val retrievedUsers = withContext(Dispatchers.IO) {
             userRepository.findAll()
         }
-        return buildSuccessfulApiResponse(retrievedUsers, "success")
+        return buildSuccessApiResponse(retrievedUsers, "success")
     }
 
     override suspend fun findUser(id: Long): ApiResponse {
         val user = userRepository.findByIdOrNull(id)
-        return buildSuccessfulApiResponse(user, "User retrieved successfully")
+        return buildSuccessApiResponse(user, "User retrieved successfully")
     }
 
     @javax.transaction.Transactional
@@ -100,14 +103,14 @@ class UserServiceImpl(
             refreshTokenRepository.deleteByUserId(id)
             userRepository.deleteById(id)
         }
-        return buildSuccessfulApiResponse(null, "", HttpStatus.NO_CONTENT)
+        return buildSuccessApiResponse(null, "", HttpStatus.NO_CONTENT)
     }
 
     override suspend fun getRoles(): ApiResponse {
         val allRoles = withContext(Dispatchers.IO) {
             roleRepository.findAll()
         }
-        return buildSuccessfulApiResponse(allRoles, "Roles retrieved successfully")
+        return buildSuccessApiResponse(allRoles, "Roles retrieved successfully")
     }
 
 }

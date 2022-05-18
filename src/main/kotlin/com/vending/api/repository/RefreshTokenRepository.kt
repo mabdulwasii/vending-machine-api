@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository
 import javax.transaction.Transactional
 
 @Repository
-interface RefreshTokenRepository : JpaRepository<RefreshToken?, Long?> {
+interface RefreshTokenRepository : JpaRepository<RefreshToken, Long> {
     fun findByToken(token: String?): Optional<RefreshToken>
     @Transactional
     fun deleteByUserId(userId: Long)
