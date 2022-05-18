@@ -1,4 +1,4 @@
-package com.vending.api.utils.validate
+package com.vending.api.utils.validation
 
 import org.passay.CharacterRule
 import org.passay.EnglishCharacterData
