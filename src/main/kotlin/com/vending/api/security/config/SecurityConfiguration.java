@@ -1,5 +1,6 @@
 package com.vending.api.security.config;
 
+import com.vending.api.dto.ActiveUser;
 import com.vending.api.security.auth.AuthEntryPointJwt;
 import com.vending.api.security.auth.AuthTokenFilter;
 import com.vending.api.security.service.DomainUserDetailsService;
@@ -58,6 +59,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public ActiveUser activeUser(){
+        return new ActiveUser();
     }
 
     @Override
