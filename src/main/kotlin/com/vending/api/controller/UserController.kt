@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController
 import javax.validation.Valid
 
 @RestController
-@RequestMapping("api")
+@RequestMapping("api",  consumes=["application/json"], produces = ["application/json"])
 class UserController(private val userService: UserService) {
     private val log = LoggerFactory.getLogger(javaClass)
 

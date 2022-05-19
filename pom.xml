@@ -16,9 +16,9 @@
     <properties>
         <java.version>11</java.version>
         <kotlin.version>1.6.21</kotlin.version>
-        <kotlinx-coroutines.version>1.6.0</kotlinx-coroutines.version>
+        <kotlinx-coroutines.version>1.6.1</kotlinx-coroutines.version>
         <jsonwebtoken.main.version>0.9.1</jsonwebtoken.main.version>
-        <jsonwebtoken.version>0.11.2</jsonwebtoken.version>
+        <jsonwebtoken.version>0.11.5</jsonwebtoken.version>
     </properties>
     <dependencies>
         <dependency>
@@ -92,8 +92,29 @@
             <version>${kotlinx-coroutines.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.ninja-squad</groupId>
+            <artifactId>springmockk</artifactId>
+            <version>3.1.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.junit.vintage</groupId>
+                    <artifactId>junit-vintage-engine</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.mockito</groupId>
+                    <artifactId>mockito-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -121,7 +142,14 @@
                     <compilerPlugins>
                         <plugin>spring</plugin>
                         <plugin>jpa</plugin>
+                        <plugin>all-open</plugin>
+                        <plugin>no-arg</plugin>
                     </compilerPlugins>
+                    <pluginOptions>
+                        <option>all-open:annotation=javax.persistence.Entity</option>
+                        <option>all-open:annotation=javax.persistence.Embeddable</option>
+                        <option>all-open:annotation=javax.persistence.MappedSuperclass</option>
+                    </pluginOptions>
                 </configuration>
                 <dependencies>
                     <dependency>

@@ -11,18 +11,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class UserDetailsImpl implements UserDetails {
+
+    private User user;
     private final Long id;
     private final String username;
     @JsonIgnore
     private final String password;
-    private final Collection<? extends GrantedAuthority> roles;
+    private final Collection<? extends GrantedAuthority> authorities;
 
     public UserDetailsImpl(Long id, String username, String password,
-                           Collection<? extends GrantedAuthority> roles) {
+                           Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;
         this.password = password;
-        this.roles = roles;
+        this.authorities = authorities;
     }
 
 
@@ -31,11 +33,21 @@ public class UserDetailsImpl implements UserDetails {
                 .map(role -> new SimpleGrantedAuthority(role.getName().name()))
                 .collect(Collectors.toList());
 
-        return new UserDetailsImpl(
+        UserDetailsImpl userDetails = new UserDetailsImpl(
                 user.getId(),
                 user.getUsername(),
                 user.getPassword(),
                 roles);
+        userDetails.setUser(user);
+        return userDetails;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Long getId() {
@@ -54,7 +66,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles;
+        return authorities;
     }
 
     @Override

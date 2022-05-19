@@ -81,7 +81,7 @@ class ProductServiceImpl(
         username.let { user ->
             val product = productRepository.findByIdOrNull(id)
             product?.let {
-                ensureSellerIdMatches(username, it.seller.username)
+                ensureSellerIdMatches(user, it.seller.username)
                 productRepository.deleteById(id)
             }
         }

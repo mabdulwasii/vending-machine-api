@@ -442,7 +442,7 @@ class RestApiExceptionHandler : ResponseEntityExceptionHandler() {
 
     @ExceptionHandler(InvalidRoleException::class)
     fun handleInvalidRoleException(ex: InvalidRoleException): ResponseEntity<Any> {
-        log.error("handleInvalidUserNameException ", ex)
+        log.error("handleInvalidRoleException ", ex)
         return buildErrorResponseEntity(
             ex.message,
             ex.localizedMessage,

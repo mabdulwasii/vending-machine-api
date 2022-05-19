@@ -26,6 +26,7 @@ import com.vending.api.utils.ConstantUtils.USER_UPDATED_SUCCESSFULLY
 import com.vending.api.utils.DtoTransformerUtils.Companion.transformCreateUserRequestToUserEntity
 import com.vending.api.utils.DtoTransformerUtils.Companion.transformUserEntityToUserDto
 import com.vending.api.utils.LoginUserUtils
+import com.vending.api.utils.SecurityUtils.Companion.converRoleStringToEnum
 import com.vending.api.utils.SecurityUtils.Companion.ensurePasswordMatch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -50,6 +51,7 @@ class UserServiceImpl(
     }
 
     override suspend fun createUser(request: CreateUserRequest): ApiResponse {
+        val roleType = converRoleStringToEnum(request.role)
         getUserByUsername(request.username)?.let {
             throw UserNameExistsException(USERNAME_ALREADY_EXIST)
         }
@@ -61,7 +63,7 @@ class UserServiceImpl(
         }
 
         val role = withContext(Dispatchers.IO) {
-            roleRepository.findByName(request.role)
+            roleRepository.findByName(roleType)
         }
         role?.let { roles.add(it) }
 

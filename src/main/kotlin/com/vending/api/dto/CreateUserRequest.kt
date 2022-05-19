@@ -1,6 +1,5 @@
 package com.vending.api.dto
 
-import com.vending.api.entity.enumeration.RoleType
 import com.vending.api.utils.validation.ValidPassword
 import javax.validation.constraints.NotEmpty
 
@@ -15,5 +14,5 @@ data class CreateUserRequest(
     val confirmPassword: String,
 
     @NotEmpty(message = "User role cannot be empty")
-    val role: RoleType
+    val role: String
 )

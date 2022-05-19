@@ -1,6 +1,5 @@
 package com.vending.api.utils
 
-import com.vending.api.dto.UserDetailsImpl
 import com.vending.api.exception.GenericException
 import com.vending.api.exception.InvalidUserNameException
 import com.vending.api.utils.ConstantUtils.ACCESS_DENIED
@@ -12,8 +11,7 @@ class LoginUserUtils {
         fun getAuthUserId(): String {
             val authentication = SecurityContextHolder.getContext().authentication
             authentication?.let {
-                val userDetails: UserDetailsImpl = it.principal as UserDetailsImpl
-                return userDetails.username
+                return it.name
             } ?: throw InvalidUserNameException(INVALID_USER_PLEASE_LOGIN)
         }
 

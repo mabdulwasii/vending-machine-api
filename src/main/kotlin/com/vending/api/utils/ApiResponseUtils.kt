@@ -19,6 +19,7 @@ class ApiResponseUtils {
             status = HttpStatus.OK
         )
 
+
         fun buildFailedApiResponse(data: Any?, message: String, status: HttpStatus) = ApiResponse(
             error = true,
             message = message,
