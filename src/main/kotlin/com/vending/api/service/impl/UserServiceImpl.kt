@@ -3,7 +3,6 @@ package com.vending.api.service.impl
 import com.vending.api.dto.ApiResponse
 import com.vending.api.dto.CreateUserRequest
 import com.vending.api.dto.Deposit
-import com.vending.api.dto.UserDTO
 import com.vending.api.entity.Role
 import com.vending.api.entity.User
 import com.vending.api.entity.enumeration.RoleType
@@ -77,7 +76,7 @@ class UserServiceImpl(
         return buildSuccessApiResponse(createdUserDto, ConstantUtils.USER_CREATED_SUCCESSFULLY, HttpStatus.CREATED)
     }
 
-    override suspend fun updateUser(userDto: UserDTO): ApiResponse {
+    override suspend fun updateUser(userDto: com.vending.api.dto.UserDTO): ApiResponse {
         val user = userRepository.findByIdOrNull(userDto.id)
         val roles = mutableSetOf<Role>()
         user?.let {user ->
